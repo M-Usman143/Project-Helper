@@ -198,36 +198,3 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 }
-
-
-
-
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(title: Text("Verify OTP")),
-//     body: Padding(
-//       padding: EdgeInsets.all(20.0),
-//       child: Column(
-//         children: [
-//           Text(
-//             "Enter OTP sent to ${widget.phoneNumber}",
-//             style: TextStyle(fontSize: 16),
-//           ),
-//           SizedBox(height: 20),
-//           TextField(
-//             controller: _otpController,
-//             decoration: InputDecoration(labelText: "Enter OTP"),
-//             keyboardType: TextInputType.number,
-//           ),
-//           SizedBox(height: 10),
-//           ElevatedButton(
-//             onPressed: _verifyOtp,
-//             child: Text("Verify OTP"),
-//           ),
-//         ],
-//       ),
-//     ),
-//   );
-// }
-
