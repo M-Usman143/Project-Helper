@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../Pages/SeeAllCategories.dart';
 import 'AdDetail.dart';
 
 class CategoriesSection extends StatelessWidget {

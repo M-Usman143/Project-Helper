@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../Home_Widgets/CategoryListview.dart';
 import '../Home_Widgets/bottom_navbar.dart';
-import '../Home_Widgets/categories_section.dart';
-import '../ProductData/ProductData.dart';
 import 'AboutUsScreen.dart';
 import 'DonationScreen.dart';
 import 'HomeScreen.dart';

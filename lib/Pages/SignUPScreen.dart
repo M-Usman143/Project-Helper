@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:isaar/Pages/LoginScreen.dart';
-import 'package:isaar/Pages/NavigationScreen.dart';
 import 'package:isaar/Pages/OtpEmail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Firebase/auth_service.dart';
-import 'OTPScreen.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -46,10 +44,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   }
                   return null;
                 }),
-
-// Phone Number
-
-
                 Row(
                   children: [
                     Container(
@@ -100,41 +94,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ],
                 ),
-
-
-
-
-
-
-
-
-
-
-
-
-
-                // _buildTextField("Phone Number", _phoneController,
-                //     keyboardType: TextInputType.phone, validator: (value) {
-                //       if (value == null || value.trim().isEmpty) {
-                //         return "Phone number is required";
-                //       }
-                //       // Ensure the number starts with +92 and has 12 digits
-                //       String formattedNumber = value.trim();
-                //       if (!formattedNumber.startsWith("+92")) {
-                //         if (formattedNumber.startsWith("0")) {
-                //           formattedNumber = "+92" + formattedNumber.substring(1);
-                //         } else {
-                //           formattedNumber = "+92" + formattedNumber;
-                //         }
-                //       }
-                //       if (!RegExp(r'^\+92\d{10}$').hasMatch(formattedNumber)) {
-                //         return "Enter a valid Pakistani phone number (+92XXXXXXXXXX)";
-                //       }
-                //       // Update the controller with the formatted number
-                //       _phoneController.text = formattedNumber;
-                //       return null;
-                //     }),
-
                 // Email
                 _buildTextField("Email", _emailController,
                     keyboardType: TextInputType.emailAddress, validator: (value) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../Category/ProductCard.dart';
 import '../Pages/SeeAllCategories.dart';
 import '../models/AdModel.dart';
-import '../models/product_model.dart';
 
 class CategoryListView extends StatelessWidget {
   final String categoryTitle;

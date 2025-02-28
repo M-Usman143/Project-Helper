@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'LoginScreen.dart';
 import 'NavigationScreen.dart';
 import 'OnBoardingScreen.dart';
 
@@ -36,12 +35,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _controller.forward();
     // Check if the user is already logged in
     _checkLoginStatus();
-    // Timer(Duration(seconds: 4), () {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(builder: (context) => OnboardingScreen()),
-    //   );
-    // });
+
   }
 
 

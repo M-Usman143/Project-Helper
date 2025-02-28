@@ -7,6 +7,7 @@ import '../Firebase/firebase_service.dart';
 import '../image_handler/ImagePickerWidget.dart';
 import '../Firebase/storage_service.dart';
 import '../models/AdModel.dart';
+
 class AdDetailsScreen extends StatefulWidget {
   final String categoryName;
   final IconData categoryIcon;
