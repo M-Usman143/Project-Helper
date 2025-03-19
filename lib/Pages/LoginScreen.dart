@@ -174,49 +174,49 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 20),
 
-                    // // Divider with text
-                    // Row(
-                    //   children: [
-                    //     Expanded(child: Divider(color: Colors.grey.shade400)),
-                    //     Padding(
-                    //       padding: EdgeInsets.symmetric(horizontal: 10),
-                    //       child: Text("OR", style: TextStyle(color: Colors.grey.shade600)),
-                    //     ),
-                    //     Expanded(child: Divider(color: Colors.grey.shade400)),
-                    //   ],
-                    // ),
-                    //
-                    // SizedBox(height: 20),
+                    // Divider with text
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: Colors.grey.shade400)),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text("OR", style: TextStyle(color: Colors.grey.shade600)),
+                        ),
+                        Expanded(child: Divider(color: Colors.grey.shade400)),
+                      ],
+                    ),
 
-                    // // Updated Google Sign-In Button
-                    // Center(
-                    //   child: ElevatedButton.icon(
-                    //     icon: Image.asset(
-                    //       'assets/images/google.png',
-                    //       height: 24.0,
-                    //       width: 24.0,
-                    //     ),
-                    //     label: Text(
-                    //       '--------Sign up With Google-------',
-                    //       style: TextStyle(fontSize: 16, color: Colors.black87),
-                    //     ),
-                    //     onPressed: () => checkInternetBeforeAction(
-                    //         context,
-                    //             () => _handleGoogleSignIn(context),
-                    //         isLoading: _isLoading
-                    //     ),
-                    //     style: ElevatedButton.styleFrom(
-                    //       backgroundColor: Colors.white,
-                    //       foregroundColor: Colors.black,
-                    //       minimumSize: Size(double.infinity, 50), // Match login button width
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10),
-                    //         side: BorderSide(color: Colors.grey.shade300),
-                    //       ),
-                    //       padding: EdgeInsets.symmetric(vertical: 15),
-                    //     ),
-                    //   ),
-                    // ),
+                    SizedBox(height: 20),
+
+                    // Updated Google Sign-In Button
+                    Center(
+                      child: ElevatedButton.icon(
+                        icon: Image.asset(
+                          'assets/images/google.png',
+                          height: 24.0,
+                          width: 24.0,
+                        ),
+                        label: Text(
+                          '--------Sign up With Google-------',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        onPressed: () => checkInternetBeforeAction(
+                            context,
+                                () => _handleGoogleSignIn(context),
+                            isLoading: _isLoading
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          minimumSize: Size(double.infinity, 50), // Match login button width
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                        ),
+                      ),
+                    ),
 
                     SizedBox(height: 10),
 
