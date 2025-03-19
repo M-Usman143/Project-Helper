@@ -17,7 +17,7 @@ class BottomNavBar extends StatelessWidget {
       index: selectedIndex,
       items: <Widget>[
         Icon(Icons.home, size: 30, color: selectedIndex == 0 ? Colors.red : Colors.white),
-        Icon(Icons.volunteer_activism, size: 30, color: selectedIndex == 1 ? Colors.red : Colors.white),
+        Icon(Icons.campaign_rounded, size: 30, color: selectedIndex == 1 ? Colors.red : Colors.white),
         Icon(Icons.chat, size: 30, color: selectedIndex == 2 ? Colors.red : Colors.white),
         Icon(Icons.person, size: 30, color: selectedIndex == 3 ? Colors.red : Colors.white),
       ],

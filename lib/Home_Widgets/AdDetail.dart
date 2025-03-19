@@ -83,7 +83,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
                   });
                 },
               ),
-            //--------------------------------------------------------------
+              //--------------------------------------------------------------
               SizedBox(height: 16),
               _buildTextField("Ad title *", "Enter title"),
               SizedBox(height: 16),
@@ -91,9 +91,11 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
               SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(flex: 1, child: _buildTextField("House No. *", "Enter house number")),
+                  Expanded(flex: 1, child: _buildTextField("House No. *", "Enter house number",keyboardType: TextInputType.phone,
+                  )),
                   SizedBox(width: 10),
-                  Expanded(flex: 2, child: _buildTextField("Street *", "Enter street")),
+                  Expanded(flex: 2, child: _buildTextField("Street *", "Enter street",keyboardType: TextInputType.streetAddress,
+                  )),
                 ],
               ),
               SizedBox(height: 16),
@@ -131,7 +133,7 @@ class _AdDetailsScreenState extends State<AdDetailsScreen> {
   }
 
   //other fields controller-------------------
-  Widget _buildTextField(String label, String hintText, {int maxLines = 1}) {
+  Widget _buildTextField(String label, String hintText, {int maxLines = 1,TextInputType keyboardType = TextInputType.text}) {
     if (!_controllers.containsKey(label)) {
       _controllers[label] = TextEditingController();
       _focusNodes[label] = FocusNode();
