@@ -40,7 +40,6 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           ListTile(
             leading: Icon(Icons.image),
             title: Text('Choose from Gallery'),
-
             onTap: () async {
               Navigator.pop(context);
               bool isStorageGranted = await PermissionHandlerService.requestStoragePermission();
@@ -59,6 +58,16 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   }
 
   Future<void> _pickSingleImage({bool fromCamera = false}) async {
+    if (_selectedImages.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("You can only upload up to 5 images!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final pickedFile = await _picker.pickImage(
       source: fromCamera ? ImageSource.camera : ImageSource.gallery,
     );
@@ -76,12 +85,14 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   Future<void> _pickMultipleImages() async {
     final pickedFiles = await _picker.pickMultiImage();
     if (pickedFiles != null) {
-      if (pickedFiles.length < 5) {
+      if (_selectedImages.length + pickedFiles.length > 5) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text("Please select at least 5 images!"),
-              backgroundColor: Colors.red),
+            content: Text("You can only upload up to 5 images!"),
+            backgroundColor: Colors.red,
+          ),
         );
+        return;
       } else {
         List<File> compressedImages = [];
         for (var file in pickedFiles) {
@@ -95,6 +106,14 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
         });
         widget.onImagesSelected(_selectedImages);
       }
+    }
+    if (_selectedImages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please select at least 1 image!"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 

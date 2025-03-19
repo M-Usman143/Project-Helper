@@ -14,4 +14,14 @@ class PermissionHandlerService {
   static Future<void> openSettings() async {
     await openAppSettings();
   }
+
+  static Future<bool> requestPhonePermission() async {
+    final phoneStatus = await Permission.phone.request();
+    if (phoneStatus.isGranted) {
+      return true;
+    } else if (phoneStatus.isPermanentlyDenied) {
+      openAppSettings();
+    }
+    return false;
+  }
 }
