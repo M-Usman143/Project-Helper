@@ -1,62 +1,107 @@
-import 'package:cloud_functions/cloud_functions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/users_info.dart';
-import 'firebase_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseService _firebaseService = FirebaseService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Sign Up User & Store Data in Firestore
+
+  Future<bool> checkIfEmailExists(String email) async {
+    try {
+      // Check Firebase Auth
+      final authMethods = await _auth.fetchSignInMethodsForEmail(email);
+      if (authMethods.isNotEmpty) return true;
+
+      // Check Firestore
+      final querySnapshot = await _firestore.collection('users')
+          .where('email', isEqualTo: email.toLowerCase())
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking email existence: $e");
+      return false;
+    }
+  }
+
+  Future<bool> checkIfPhoneExists(String phone) async {
+    try {
+      final formattedPhone = "+92${phone.replaceAll(RegExp(r'[^0-9]'), '')}";
+      final authEmail = "$formattedPhone@phone.com";
+
+      // Check Firebase Auth
+      final authMethods = await _auth.fetchSignInMethodsForEmail(authEmail);
+      if (authMethods.isNotEmpty) return true;
+
+      // Check Firestore
+      final querySnapshot = await _firestore.collection('users')
+          .where('phone', isEqualTo: formattedPhone)
+          .limit(1)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking phone existence: $e");
+      return false;
+    }
+  }
+
   Future<String?> signUpUser(String name, String phone, String email, String password) async {
     try {
-      // Create user in Firebase Authentication
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      String uid = userCredential.user!.uid;
-
-      // Create user model
-      UserModel newUser = UserModel(
-        uid: uid,
-        name: name,
-        email: email,
-        phone: phone,
-      );
-
-      // Store user data in Firestore
-      await _firebaseService.saveUser(newUser);
-
-      return uid; // Return the UID upon success
+      await cred.user!.sendEmailVerification();
+      return null;
     } catch (e) {
-      return e.toString(); // Return error message if failure occurs
+      return e.toString();
     }
   }
 
-  // Sign In User
-  Future<String?> signInUser(String email, String password) async {
-    try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return null; // Success
-    } catch (e) {
-      return e.toString(); // Error message
-    }
-  }
+// Future<String?> signUpUser(String name, String phone, String email, String password) async {
+//   try {
+//     // Validate phone format
+//     if (!RegExp(r'^\+92\d{10}$').hasMatch(phone)) {
+//       return "Phone must be in +92XXXXXXXXXX format";
+//     }
+//     if (await checkIfEmailExists(email)) return "Email already in use";
+//     if (await checkIfPhoneExists(phone)) return "Phone already in use";
+//
+//     final authEmail = "$phone@phone.com";
+//
+//     // Create Firebase user
+//     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+//       email: authEmail,
+//       password: password,
+//     );
+//
+//     // Save user info in Firestore
+//     await _firebaseService.saveUser(UserModel(
+//       uid: userCredential.user!.uid,
+//       name: name,
+//       phone: phone,
+//       email: email, // Store real email
+//     ));
+//
+//     return null;
+//   } catch (e) {
+//     return e.toString();
+//   }
+// }
 
-  Future<void> sendOtpEmail(String uid) async {
-    try {
-      final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('sendOtpEmail');
-      final response = await callable.call({'userId': uid});
+// Future<User?> signInWithEmail(String email, String password) async {
+//   try {
+//     UserCredential credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+//       email: email,
+//       password: password,
+//     );
+//     return credential.user;
+//   } on FirebaseAuthException catch (e) {
+//     print("Auth Error: ${e.code} - ${e.message}");
+//     return null;
+//   }
+// }
 
-      if (response.data['success']) {
-        print("OTP sent successfully.");
-      } else {
-        print("Failed to send OTP: ${response.data['message']}");
-      }
-    } catch (e) {
-      print("Error calling Cloud Function: $e");
-    }
-  }
 }

@@ -5,7 +5,6 @@ import '../models/users_info.dart';
 
 class FirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   // Save user data to Firestore
   Future<void> saveUser(UserModel user) async {
     try {
@@ -15,17 +14,79 @@ class FirebaseService {
     }
   }
 
+  // Get user by email
+  Future<UserModel?> getUserByEmail(String email) async {
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email.toLowerCase())
+          .limit(1)
+          .get();
+
+      return snapshot.docs.isEmpty
+          ? null
+          : UserModel.fromJson(snapshot.docs.first.data() as Map<String, dynamic>);
+    } catch (e) {
+      print("Error fetching user by email: $e");
+      return null;
+    }
+  }
+
+  Future<UserModel?> getUserByPhone(String phone) async {
+    final snapshot = await _firestore
+        .collection("users")
+        .where("phone", isEqualTo: phone)
+        .limit(1)
+        .get();
+    return snapshot.docs.isEmpty
+        ? null
+        : UserModel.fromJson(snapshot.docs.first.data());
+  }
+
+
+
   // Retrieve user data from Firestore
   Future<UserModel?> getUser(String uid) async {
     try {
+      print("Attempting to fetch user with UID: $uid");
       DocumentSnapshot doc = await _firestore.collection("users").doc(uid).get();
+      print("Document exists: ${doc.exists}");
+
       if (doc.exists) {
-        return UserModel.fromJson(doc.data() as Map<String, dynamic>);
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        print("User data: $data");
+        return UserModel.fromJson(data);
+      } else {
+        print("No document found for user with UID: $uid");
       }
     } catch (e) {
       print("Error fetching user: $e");
     }
     return null;
+  }
+
+  // Update user's name in Firestore
+  Future<bool> updateUserName(String uid, String newName) async {
+    try {
+      await _firestore.collection("users").doc(uid).update({
+        'name': newName,
+      });
+      return true;
+    } catch (e) {
+      print("Error updating user name: $e");
+      return false;
+    }
+  }
+
+  // Delete user from Firestore
+  Future<bool> deleteUser(String uid) async {
+    try {
+      await _firestore.collection("users").doc(uid).delete();
+      return true;
+    } catch (e) {
+      print("Error deleting user: $e");
+      return false;
+    }
   }
 }
 
@@ -96,8 +157,18 @@ class FirestoreService {
       return [];
     }
   }
-
-  Future<void> updateAd(String userId, String adId, String newTitle, String newDescription) async {
+  Future<void> updateAd(
+      String userId,
+      String adId,
+      String newTitle,
+      String newDescription,
+      String newHouseNo,
+      String newStreet,
+      String newImportantArea,
+      String newCity,
+      String newWhatsappNumber,
+      List<String> imageUrls, // Change this to List<String>
+      ) async {
     try {
       await _firestore
           .collection("users")
@@ -107,11 +178,20 @@ class FirestoreService {
           .update({
         'title': newTitle,
         'description': newDescription,
+        'houseNo': newHouseNo,
+        'street': newStreet,
+        'importantArea': newImportantArea,
+        'city': newCity,
+        'whatsappNumber': newWhatsappNumber,
+        'imageUrls': imageUrls,
       });
     } catch (e) {
       print("Error updating ad: $e");
     }
   }
+
+
+
 
   Future<void> deleteAd(String userId, String adId) async {
     try {

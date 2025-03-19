@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 
 class StorageService {
@@ -20,5 +19,15 @@ class StorageService {
     }
 
     return imageUrls;
+  }
+
+  // ✅ Corrected deleteImage method
+  Future<void> deleteImage(String imageUrl) async {
+    try {
+      Reference ref = FirebaseStorage.instance.refFromURL(imageUrl); // Correct way to get reference
+      await ref.delete();
+    } catch (e) {
+      throw Exception("Failed to delete image: $e");
+    }
   }
 }
