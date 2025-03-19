@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isaar/models/AdModel.dart';
 import '../Category/ProductCard.dart';
+import '../Common/InternetChecker.dart';
 
 class SeeAllPage extends StatefulWidget {
   final List<AdModel> ad;
@@ -57,43 +58,45 @@ class _SeeAllPageState extends State<SeeAllPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Display number of results
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Text(
-              "Showing ${filteredAds.length} results for \"${widget.categoryName}\"",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-
-          // Product Grid
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 0.6, // Adjust for better UI
+    return InternetChecker(
+      child: Scaffold(
+        appBar: buildAppBar(context),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Display number of results
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "Showing ${filteredAds.length} results for \"${widget.categoryName}\"",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
                 ),
-                itemCount: filteredAds.length,
-                itemBuilder: (context, index) {
-                  return ProductCard(ad: filteredAds[index]);
-                },
               ),
             ),
-          ),
-        ],
+
+            // Product Grid
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.6, // Adjust for better UI
+                  ),
+                  itemCount: filteredAds.length,
+                  itemBuilder: (context, index) {
+                    return ProductCard(ad: filteredAds[index]);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

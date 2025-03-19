@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:isaar/Common/InternetChecker.dart';
 import '../Firebase/firebase_service.dart';
 import '../Home_Widgets/CategoryListview.dart';
 import '../Home_Widgets/categories_section.dart';
@@ -16,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String userName = "Loading...";
   final FirebaseService _firebaseService = FirebaseService();
+  User? get currentUser => FirebaseAuth.instance.currentUser;
+
   final FirestoreService _firestoreService = FirestoreService();
   List<AdModel> ads = [];
   List<AdModel> filteredAds = [];
@@ -30,46 +33,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  void _fetchAds() async {
+
+
+  // Fetch username from Firestore
+  void _fetchUserName() async {
     try {
-      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      User? currentUser = FirebaseAuth.instance.currentUser;
 
-      List<AdModel> fetchedAds = await _firestoreService.fetchAds(currentUserId);
-      setState(() {
-        ads = fetchedAds;
-        filteredAds = fetchedAds;
-        isLoading = false;
-      });
-    } catch (e) {
-      print("Error fetching ads: $e");
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
+      // Debug the current user state
+      print("Current user: ${currentUser?.uid ?? 'null'}");
+      print("Current user email: ${currentUser?.email ?? 'null'}");
+      print("Is user verified: ${currentUser?.emailVerified ?? 'null'}");
 
-  void _filterAds(String query) {
-    setState(() {
-      searchQuery = query.toLowerCase();
-      filteredAds = ads
-          .where((ad) =>
-      ad.title.toLowerCase().contains(searchQuery) ||
-          ad.description.toLowerCase().contains(searchQuery))
-          .toList();
-    });
-  }
-
-  // Group ads by category
-  Map<String, List<AdModel>> _groupAdsByCategory(List<AdModel> adList) {
-    Map<String, List<AdModel>> categoryMap = {};
-    for (var ad in adList) {
-      if (ad.category.isEmpty) {
-        print("Missing category for ad: ${ad.title}");
+      if (currentUser == null) {
+        print("User not logged in");
+        setState(() {
+          userName = "Guest";
+        });
+        return;
       }
-      categoryMap.putIfAbsent(ad.category, () => []).add(ad);
+
+      String uid = currentUser.uid; // Get current user ID
+      print("Fetching user with UID: $uid");
+      UserModel? user = await _firebaseService.getUser(uid);
+      if (user != null) {
+        setState(() {
+          userName = user.name;
+        });
+        print("User name fetched: ${user.name}");
+      } else {
+        print("User not found in database");
+        setState(() {
+          userName = "User Not Found";
+        });
+      }
+    } catch (e) {
+      print("Error fetching user: $e");
+      setState(() {
+        userName = "Error Loading";
+      });
     }
-    return categoryMap;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +85,21 @@ class _HomeScreenState extends State<HomeScreen> {
       statusBarIconBrightness: Brightness.light,
     ));
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            CategoriesSection(),
-            SizedBox(height: 10),
-            for (var entry in categorizedAds.entries)
-              CategoryListView(categoryTitle: entry.key, categoryAds: entry.value),
-
-          ],
+    return InternetChecker(
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: _buildAppBar(),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              CategoriesSection(),
+              SizedBox(height: 10),
+              for (var entry in categorizedAds.entries)
+                CategoryListView(categoryTitle: entry.key, categoryAds: entry.value),
+            ],
+          ),
         ),
       ),
     );
@@ -169,26 +175,61 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Fetch username from Firestore
-  Future<void> _fetchUserName() async {
+
+  void _fetchAds() async {
     try {
-      String uid = FirebaseAuth.instance.currentUser!.uid; // Get current user ID
-      UserModel? user = await _firebaseService.getUser(uid);
-      if (user != null) {
+      User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        print("User not logged in, can't fetch ads");
         setState(() {
-          userName = user.name; // Set the retrieved name
+          isLoading = false;
         });
-      } else {
+        return;
+      }
+
+      String currentUserId = currentUser.uid;
+      print("Fetching ads for user: $currentUserId");
+
+      List<AdModel> fetchedAds = await _firestoreService.fetchAds(currentUserId);
+      print("Fetched ${fetchedAds.length} ads");
+
+      if (mounted) {
         setState(() {
-          userName = "User Not Found";
+          ads = fetchedAds;
+          filteredAds = fetchedAds;
+          isLoading = false;
         });
       }
     } catch (e) {
-      print("Error fetching user: $e");
-      setState(() {
-        userName = "Error Loading";
-      });
+      print("Error fetching ads: $e");
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
+  void _filterAds(String query) {
+    setState(() {
+      searchQuery = query.toLowerCase();
+      filteredAds = ads
+          .where((ad) =>
+      ad.title.toLowerCase().contains(searchQuery) ||
+          ad.description.toLowerCase().contains(searchQuery))
+          .toList();
+    });
+  }
+
+  // Group ads by category
+  Map<String, List<AdModel>> _groupAdsByCategory(List<AdModel> adList) {
+    Map<String, List<AdModel>> categoryMap = {};
+    for (var ad in adList) {
+      if (ad.category.isEmpty) {
+        print("Missing category for ad: ${ad.title}");
+      }
+      categoryMap.putIfAbsent(ad.category, () => []).add(ad);
+    }
+    return categoryMap;
+  }
 }
